@@ -1,9 +1,12 @@
+FROM docker.io/tailscale/tailscale:latest AS BASE
+
 FROM alpine:edge
+
+COPY --from=BASE /usr/local/bin/* /usr/local/bin/
 
 RUN set -x \
   \
   && apk add --no-cache \
-    tailscale \
     ca-certificates \
     iptables \
     iproute2 \
