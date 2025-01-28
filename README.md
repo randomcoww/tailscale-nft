@@ -1,4 +1,4 @@
-### Container for tailscale packaged with nf_tables version of iptables
+### Container for tailscale packaged with nftables version of iptables
 
 https://github.com/tailscale/tailscale
 
