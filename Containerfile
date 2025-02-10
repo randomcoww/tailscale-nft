@@ -1,4 +1,5 @@
-FROM docker.io/tailscale/tailscale:latest AS BASE
+ARG VERSION=latest
+FROM docker.io/tailscale/tailscale:$VERSION AS BASE
 
 FROM alpine:edge
 

@@ -39,4 +39,5 @@ jobs:
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
           --destination="ghcr.io/${{ github.repository }}:v$(date -u +'%Y%m%d.%H%M')" \
+          --build-arg VERSION=latest \
           --push-retry 3
