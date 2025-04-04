@@ -26,7 +26,7 @@ jobs:
     - name: Set tag
       run: |
         echo VERSION=$(wget -O - https://api.github.com/repos/tailscale/tailscale/releases/latest |grep tag_name | cut -d '"' -f 4) | tee -a "$GITHUB_ENV"
-        echo TAG=$VERSION.$(date -u +'%Y%m%d.%H%M') | tee -a "$GITHUB_ENV"
+        echo TAG=$(date -u +'%Y%m%d.%H%M') | tee -a "$GITHUB_ENV"
 
     - name: Build and release container
       run: |
@@ -43,6 +43,6 @@ jobs:
         /kaniko/executor \
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
-          --destination="ghcr.io/${{ github.repository }}:$TAG" \
+          --destination="ghcr.io/${{ github.repository }}:$VERSION.$TAG" \
           --build-arg VERSION=$VERSION \
           --push-retry 3
