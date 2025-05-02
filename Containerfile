@@ -32,7 +32,7 @@ ARG VERSION_GIT_HASH=""
 ENV VERSION_GIT_HASH=$VERSION_GIT_HASH
 ARG TARGETARCH
 
-RUN GOARCH=$TARGETARCH go install -ldflags="\
+RUN go install -ldflags="\
   -X tailscale.com/version.longStamp=$VERSION_LONG \
   -X tailscale.com/version.shortStamp=$VERSION_SHORT \
   -X tailscale.com/version.gitCommitStamp=$VERSION_GIT_HASH" \

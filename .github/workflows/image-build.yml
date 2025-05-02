@@ -25,9 +25,7 @@ jobs:
     steps:
     - name: Set tag
       run: |
-        VERSION=$(wget -O - https://api.github.com/repos/tailscale/tailscale/releases/latest | grep tag_name | cut -d '"' -f 4 | tr -d 'v')
-        echo VERSION_LONG=$VERSION | tee -a "$GITHUB_ENV"
-        echo VERSION_SHORT=$(echo $VERSION | cut -d '.' -f 1-2)
+        echo VERSION=$(wget -O - https://api.github.com/repos/tailscale/tailscale/releases/latest | grep tag_name | cut -d '"' -f 4 | tr -d 'v') | tee -a "$GITHUB_ENV"
         echo TAG=$(date -u +'%Y%m%d.%H%M') | tee -a "$GITHUB_ENV"
 
     - name: Build and release container
@@ -42,15 +40,11 @@ jobs:
         }
         EOF
 
-        TARGETARCH=$(arch)
-        TARGETARCH=${TARGETARCH/x86_64/amd64} && TARGETARCH=${TARGETARCH/aarch64/arm64}
-
         /kaniko/executor \
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
-          --destination="ghcr.io/${{ github.repository }}:v$VERSION_LONG.$TAG" \
-          --build-arg VERSION_LONG=$VERSION_LONG \
-          --build-arg VERSION_SHORT=$VERSION_SHORT \
+          --destination="ghcr.io/${{ github.repository }}:v$VERSION.$TAG" \
+          --build-arg VERSION_LONG=$VERSION \
+          --build-arg VERSION_SHORT=$(echo $VERSION | cut -d '.' -f 1-2) \
           --build-arg VERSION_GIT_HASH=${{ github.sha }} \
-          --build-arg TARGETARCH= \
           --push-retry 3
