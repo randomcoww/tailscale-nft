@@ -38,7 +38,7 @@ RUN go install -ldflags="\
   -X tailscale.com/version.gitCommitStamp=$VERSION_GIT_HASH" \
   -v ./cmd/tailscale ./cmd/tailscaled ./cmd/containerboot
 
-FROM alpine:edge
+FROM alpine:3.21
 
 COPY --from=build-env /go/bin/* /usr/local/bin/
 
