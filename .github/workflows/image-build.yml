@@ -48,7 +48,6 @@ jobs:
           --build-arg VERSION_LONG=$VERSION \
           --build-arg VERSION_SHORT=$(echo $VERSION | cut -d '.' -f 1-2) \
           --build-arg VERSION_GIT_HASH=${{ github.sha }} \
-          --cache \
           --push-retry 3
   cleanup:
     needs:
