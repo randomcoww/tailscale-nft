@@ -21,18 +21,23 @@ jobs:
   build:
     runs-on: arc-runner-${{ github.event.repository.name }}
     container:
-      image: registry.default/randomcoww/kaniko:latest
+      image: docker.io/martizih/kaniko:debug
     permissions:
       contents: read
     steps:
     - name: Set tag
       run: |
+        TARGETARCH=$(arch)
+        TARGETARCH=${TARGETARCH/x86_64/amd64} && TARGETARCH=${TARGETARCH/aarch64/arm64}
+        JQ_VERSION=$(wget -O - https://api.github.com/repos/jqlang/jq/releases/latest | grep tag_name | cut -d '"' -f 4 | tr -d 'v')
+        wget -O /kaniko/jq https://github.com/jqlang/jq/releases/download/$JQ_VERSION/jq-linux-$TARGETARCH
+        chmod +x /kaniko/jq
+
         echo VERSION=$(wget -O - https://api.github.com/repos/tailscale/tailscale/git/refs/tags | jq -r 'last(.[] | select(.ref | endswith("-pre") | not )).ref' | sed 's/refs\/tags\///') | tee -a "$GITHUB_ENV"
         echo TAG=$(date -u +'%Y%m%d.%H%M') | tee -a "$GITHUB_ENV"
 
     - name: Build and release container
       run: |
-        mkdir -p $DOCKER_CONFIG
         cat > $DOCKER_CONFIG/config.json <<EOF
         {
           "auths": {
@@ -44,7 +49,7 @@ jobs:
         EOF
         echo -e "$INTERNAL_CA_CERT" > $DOCKER_CONFIG/internal.crt
 
-        /kaniko/executor \
+        executor \
           --dockerfile="./Containerfile" \
           --context="${{ github.repositoryUrl }}#${{ github.ref }}#${{ github.sha }}" \
           --destination="$INTERNAL_REGISTRY/${{ github.repository }}:$VERSION.$TAG" \
